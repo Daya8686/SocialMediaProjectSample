@@ -1,4 +1,4 @@
-package com.socialmediademo.component;
+package com.socialmediademo.service;
 
 import java.time.LocalDate;
 import java.util.ArrayList;

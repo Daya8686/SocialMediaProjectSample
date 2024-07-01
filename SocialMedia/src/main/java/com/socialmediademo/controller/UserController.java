@@ -1,9 +1,12 @@
 package com.socialmediademo.controller;
 
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 import java.net.URI;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,10 +16,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import com.socialmediademo.component.UserService;
 import com.socialmediademo.entity.User;
 import com.socialmediademo.exceptionhandler.UnableToAddUserException;
 import com.socialmediademo.exceptionhandler.UserNotFoundException;
+import com.socialmediademo.service.UserService;
 
 import jakarta.validation.Valid;
 
@@ -45,17 +48,23 @@ public class UserController {
 		URI locationUrl = ServletUriComponentsBuilder.fromCurrentRequest()
 					.path("/{id}")
 					.buildAndExpand(user.getUserId())
-					.toUri();
+					.toUri(); //By this we get the link in header
 		return ResponseEntity.created(locationUrl).build();
 	}
 	
 	@GetMapping("/users/{id}")
-	public ResponseEntity<User> retriveUserById(@PathVariable Integer id){
+	public EntityModel<User> retriveUserById(@PathVariable Integer id){
 		User user = service.findUser(id);
 		if(user==null) {
 			throw new UserNotFoundException("User not found with this id:"+id);
 		}
-		return ResponseEntity.ok().body(user);
+		//Implementing HATEOAS -> HyperMedia as the Engine of Application System
+		//This will proved any URI from controller method
+		//To Implement this we need EntityModel and WebMVCLinkBuilder
+		EntityModel<User> userDetail= EntityModel.of(user);
+		WebMvcLinkBuilder link = linkTo(methodOn(this.getClass()).retriveAllUsers());
+		userDetail.add(link.withRel("all-users"));
+		return userDetail;
 	}
 	
 	@DeleteMapping("/users/{id}")

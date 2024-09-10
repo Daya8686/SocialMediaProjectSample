@@ -18,7 +18,7 @@ public class DynamicJsonFilter {
 	@GetMapping("/filter")
 	public MappingJacksonValue getFields() {
 		
-		 FieldsForFiltering fieldsForFiltering = new FieldsForFiltering("Value 1", "Value 2", "Value 3");
+		 FieldsForFiltering fieldsForFiltering = new FieldsForFiltering("Value 1", "Value 2", "Value 3"); //This FieldsForFiltering is a Entity which we created
 //		Here we are adding the dynamic filtering
 		MappingJacksonValue mappingJacksonValue = new MappingJacksonValue(fieldsForFiltering);
 		SimpleBeanPropertyFilter filter =SimpleBeanPropertyFilter.filterOutAllExcept("field1","field3");
